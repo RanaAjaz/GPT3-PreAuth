@@ -11,6 +11,10 @@ import openai
 from io import StringIO
 import ast
 
+import os
+import pathlib
+from pathlib import Path
+
 import streamlit as st
 
 
@@ -50,22 +54,51 @@ def upload_pdf( ):
     print( "line 2" )
 
     if( uploaded_pdf ):
-        f = uploaded_pdf.name
-        print( "file name = {}".format( f ) )
+        
+        # f = uploaded_pdf.name
+        fn = uploaded_pdf.name
+
+        print( "file name = {}".format( fn ) )
+
+        # d = pathlib.Path().resolve()
+        # print( "dir name = {}".format( d ) )
+        # fullName = d.joinpath( f )
+        # print( "fulk name = {}".format( fullName ) )
+
+        #Returns the path of the directory, where your script file is placed
+        filePath = Path().absolute()
+        print('Absolute path : {}'.format(filePath))
+
+        #if you want to go to any other file inside the subdirectories of the directory path got from above method
+        # filePath = mypath/'data'/'fuel_econ.csv'
+        # print('File path : {}'.format(filePath))
+
+        #To check if file present in that directory or Not
+        isfileExist = filePath.exists()
+        print('isfileExist : {}'.format(isfileExist))
+
+        fullName = filePath.joinpath( fn )
+        print( "full name = {}".format( fullName ) )
     
+
     if uploaded_pdf is not None:
         # print ( uploaded_pdf.name )
 
-        with open( uploaded_pdf.name, "rb" ) as f:
-            base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-            pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000" type="application/pdf">' 
+        with open( fullName.name, "rb" ) as f:
+        # with open( uploaded_pdf.name, "rb" ) as f:
+                       
+            # base64_pdf = base64.b64encode(f.read()).decode('utf-8')
+            # pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000" type="application/pdf">' 
             
-            # pdf_display = F'<iframe src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000" type="application/pdf"></iframe>'
+            base64_pdf = base64.b64encode(f.read()).decode('utf-8')
+            pdf_display = F'<iframe src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000" type="application/pdf"></iframe>'
             
             st.markdown( pdf_display, unsafe_allow_html = True )
             # print( type( base64_pdf ))
             # print( base64_pdf )
+
     return uploaded_pdf
+    
 
 
 def upload_extracted_file( ):
@@ -83,8 +116,8 @@ def upload_extracted_file( ):
 
 uploaded_pdf = upload_pdf()
 if uploaded_pdf:
-#    file_text = upload_extracted_file( )
-#    st.write( file_text )
+    # file_text = upload_extracted_file( )
+    # st.write( file_text )
 
     file_name = uploaded_pdf.name
 
