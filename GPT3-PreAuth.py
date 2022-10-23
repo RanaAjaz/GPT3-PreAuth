@@ -6,23 +6,13 @@ import ast
 
 # import camelot
 # from camelot.core import Table
-
-import matplotlib.pyplot as plt
-
 import pandas as pd 
 import openai
 from io import StringIO
 import ast
 
 import streamlit as st
-import pickle as pkle
-import os.path
-from os.path import realpath
 
-import json
-from altair.vegalite.v4.schema.core import Header
-import requests
-from requests.sessions import ContentDecodingError, default_headers 
 
 api_key = st.sidebar.text_input("APIkey", type="password")
 
