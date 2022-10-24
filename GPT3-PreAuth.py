@@ -16,6 +16,7 @@ import pathlib
 from pathlib import Path
 
 import streamlit as st
+import fitz
 
 
 api_key = st.sidebar.text_input("APIkey", type="password")
@@ -44,62 +45,37 @@ letter_summary = None
 
 prompt_string = None
 
-def upload_pdf( ):
+# uploaded_pdf = st.file_uploader("Load pdf: ", type=['pdf'])
 
-    uploaded_pdf = st.file_uploader("Choose SBC - PDF data will be Extracted and written to a TXT file", type = "pdf", key = "display_pdf")
+uploaded_pdf = st.file_uploader("Upload your PDF", type="pdf", key="file")
+
+if uploaded_pdf is not None:
     
-    print( " line 1" ) 
-    print( type( uploaded_pdf ) )
-    # print( type( uploaded_pdf.name ) )
-    print( "line 2" )
+    uploadedFile = fitz.open("pdf", st.session_state.file.read())
+    print("uploaded fle is pdf {}".format( uploadedFile.is_pdf ) )
+    print( "uploaded file name is {}".format( uploadedFile.name ) )
+    # p = uploadedFile.convert_to_pdf()
+    # print( "uploadedFile converted to {}".format( p ))
 
-    if( uploaded_pdf ):
-        
-        # f = uploaded_pdf.name
-        fn = uploaded_pdf.name
-
-        print( "file name = {}".format( fn ) )
-
-        # d = pathlib.Path().resolve()
-        # print( "dir name = {}".format( d ) )
-        # fullName = d.joinpath( f )
-        # print( "fulk name = {}".format( fullName ) )
-
-        #Returns the path of the directory, where your script file is placed
-        filePath = Path().absolute()
-        print('Absolute path : {}'.format(filePath))
-
-        #if you want to go to any other file inside the subdirectories of the directory path got from above method
-        # filePath = mypath/'data'/'fuel_econ.csv'
-        # print('File path : {}'.format(filePath))
-
-        #To check if file present in that directory or Not
-        isfileExist = filePath.exists()
-        print('isfileExist : {}'.format(isfileExist))
-
-        fullName = filePath.joinpath( fn )
-        print( "full name = {}".format( fullName ) )
+    # base64_pdf = base64.b64encode(uploadedFile.read()).decode('pdf')
+    # base64_pdf = base64.b64encode(uploadedFile.read()).decode('utf-8')
+    # pdf_display = f'<embed src="data:application/pdf;base64,{uploadedFile}" width="700" height="1000" type="application/pdf">'
+    # pdf_display = F'<iframe src="data:application/pdf;pdf,{uploadedFile}" width="700" height="1000" type="application/pdf"></iframe>'
     
+    # pdf_display = f'<embed src="data:application/pdf; pdf, {uploadedFile.convert_to_pdf()}" width="700" height="1000" type="application/pdf">'
 
-    if uploaded_pdf is not None:
-        # print ( uploaded_pdf.name )
+    # pdf_display = F'<iframe src="data:application/pdf;pdf,{uploadedFile}" width="700" height="1000" type="application/pdf"></iframe>'
+ 
+    # pdf_display = f'<embed src="data:application/pdf; pdf, {uploaded_pdf}" width="700" height="1000" type="application/pdf">'
+    # st.markdown( pdf_display, unsafe_allow_html = True )
 
-        with open( fullName.name, "rb" ) as f:
-        # with open( uploaded_pdf.name, "rb" ) as f:
-                       
-            # base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-            # pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000" type="application/pdf">' 
-            
-            base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-            pdf_display = F'<iframe src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000" type="application/pdf"></iframe>'
-            
-            st.markdown( pdf_display, unsafe_allow_html = True )
-            # print( type( base64_pdf ))
-            # print( base64_pdf )
-
-    return uploaded_pdf
-    
-
+    doc = fitz.open(stream=uploaded_pdf.read(), filetype="pdf")
+    text = ""
+    for page in doc:
+        text += page.get_text()
+    st.write(text) 
+    doc.close()
+  
 
 def upload_extracted_file( ):
     uploaded_file = st.file_uploader("Uploaded PDF extract - TXT file", key = "extract_pdf" )
@@ -114,7 +90,7 @@ def upload_extracted_file( ):
     return file_text
 
 
-uploaded_pdf = upload_pdf()
+# uploaded_pdf = upload_pdf()
 if uploaded_pdf:
     # file_text = upload_extracted_file( )
     # st.write( file_text )
